@@ -15,14 +15,15 @@ PKG_LICENSE_FILES:=LICENSE
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-define Package/submodule
+define Package/example3
   SECTION:=utils
   CATEGORY:=Utilities
-  TITLE:=submodule
+  TITLE:=submodule of license manager
+  URL:=https://github.com/open-license-manager/examples.git
   DEPENDS:=
 endef
 
-define Package/submodule/description
+define Package/example3/description
   Examples of open-license-manager
 endef
 
