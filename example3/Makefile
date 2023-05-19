@@ -35,9 +35,9 @@ define Build/Compile
   $(MAKE) -C $(PKG_BUILD_DIR)
 endef
 
-define Package/submodule/install
+define Package/example3/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/example $(1)/usr/bin/
 endef
 
-$(eval $(call BuildPackage,submodule))
+$(eval $(call BuildPackage,example3))
