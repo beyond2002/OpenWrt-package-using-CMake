@@ -16,28 +16,32 @@ include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
 define Package/example3
-  SECTION:=utils
-  CATEGORY:=Utilities
-  TITLE:=submodule of license manager
-  URL:=https://github.com/open-license-manager/examples.git
-  DEPENDS:=
+	SECTION:=utils
+	CATEGORY:=Utilities
+	TITLE:=submodule of license manager
+	URL:=https://github.com/open-license-manager/examples.git
+	DEPENDS:=+libopenssl +boost-date_time +boost-filesystem +boost-system +boost-test
 endef
 
 define Package/example3/description
-  Examples of open-license-manager
+	Examples of open-license-manager
 endef
 
 define Build/Configure
-  $(call Build/Configure/Default)
+	(cd $(PKG_BUILD_DIR)/submodule/build; \
+	cmake .. \
+	)
 endef
 
 define Build/Compile
-  $(MAKE) -C $(PKG_BUILD_DIR)
+	(cd $(PKG_BUILD_DIR)/submodule/build; \
+	cmake --build . \
+	)
 endef
 
 define Package/example3/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/example $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/submodule/build/example $(1)/usr/bin/
 endef
 
 $(eval $(call BuildPackage,example3))
