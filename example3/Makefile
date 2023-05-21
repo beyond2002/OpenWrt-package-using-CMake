@@ -20,7 +20,6 @@ define Package/example3
 	CATEGORY:=Utilities
 	TITLE:=submodule of license manager
 	URL:=https://github.com/open-license-manager/examples.git
-	DEPENDS:=+libopenssl +boost-date_time +boost-filesystem +boost-system +boost-test
 endef
 
 define Package/example3/description
@@ -29,7 +28,8 @@ endef
 
 define Build/Configure
 	(cd $(PKG_BUILD_DIR)/submodule/build; \
-	cmake .. \
+	cmake -DLCC_PROJECT_NAME=submodule -DCMAKE_PREFIX_PATH=$(STAGING_DIR)/usr \
+	.. \
 	)
 endef
 
