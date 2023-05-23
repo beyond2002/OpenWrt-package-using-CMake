@@ -15,7 +15,21 @@ PKG_LICENSE_FILES:=LICENSE
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
+CMAKE_OPTIONS=-D LCC_PROJECT_NAME=submodule \
+			  -D CMAKE_PREFIX_PATH=$(STAGING_DIR)/usr \
+			  -D CMAKE_VERBOSE_MAKEFILE=ON \
+			  -D CMAKE_CROSSCOMPILING=FALSE \
+			  -D CMAKE_INSTALL_PREFIX=. \
+			  -D CMAKE_BUILD_TYPE=Release \
+			  -D CMAKE_C_FLAGS_RELEASE="-DNDEBUG -D_POSIX_SOURCE" \
+			  -D CMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -D_POSIX_SOURCE" \
+			  -D NDEBUG=ON \
+			  -D BUILD_TESTING=0
+
+MAKE_PATH:=submodule/build
+
 define Package/example3
+
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=submodule of license manager
@@ -26,18 +40,21 @@ define Package/example3/description
 	Examples of open-license-manager
 endef
 
+
 define Build/Configure
 	(cd $(PKG_BUILD_DIR)/submodule/build; \
-	cmake -DLCC_PROJECT_NAME=submodule -DCMAKE_PREFIX_PATH=$(STAGING_DIR)/usr \
-	.. \
+		cmake \
+			$(CMAKE_OPTIONS) \
+		$(CMAKE_SOURCE_DIR)/submodule \
 	)
 endef
 
-define Build/Compile
-	(cd $(PKG_BUILD_DIR)/submodule/build; \
-	cmake --build . \
-	)
-endef
+# define Build/Compile
+# 	(cd $(PKG_BUILD_DIR)/submodule/build; \
+# 	cmake \
+# 	--build . --target install \
+# 	)
+# endef
 
 define Package/example3/install
 	$(INSTALL_DIR) $(1)/usr/bin
