@@ -29,7 +29,7 @@ define Package/example3
 	CATEGORY:=Utilities
 	TITLE:=submodule of license manager
 	URL:=https://github.com/open-license-manager/examples.git
-	DEPENDS:=
+	DEPENDS:=+libstdcpp
 endef
 
 define Package/example3/description
@@ -52,9 +52,12 @@ endef
 # 	)
 # endef
 
-# define Package/example3/install
-# 	$(INSTALL_DIR) $(1)/usr/bin
-# 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/submodule/build/example $(1)/usr/bin/
-# endef
+define Package/example3/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/submodule/build/example $(1)/usr/bin/
+	$(INSTALL_DIR) $(1)/usr/lib
+	# $(INSTALL_DATA) $(TOOLCHAIN_DIR)/lib/libstdc++.so.6 $(1)/usr/lib
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/submodule/build/extern/open-license-manager/src/library/liblicensecc_static.a $(1)/usr/lib
+endef
 
 $(eval $(call BuildPackage,example3))
