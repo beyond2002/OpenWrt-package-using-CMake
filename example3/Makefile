@@ -5,35 +5,31 @@ PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
 
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/open-license-manager/examples.git
+PKG_SOURCE_URL:=https://github.com/beyond2002/examples.git
 PKG_SOURCE_VERSION:=develop
 
 PKG_MAINTAINER:=Gabriele Contini <youremail@example.com>
 PKG_LICENSE:=GPL-2.0-or-later
 PKG_LICENSE_FILES:=LICENSE
 
-include $(INCLUDE_DIR)/package.mk
-include $(INCLUDE_DIR)/cmake.mk
+PKG_BUILD_PARALLEL:=0
 
 CMAKE_OPTIONS=-D LCC_PROJECT_NAME=submodule \
 			  -D CMAKE_PREFIX_PATH=$(STAGING_DIR)/usr \
-			  -D CMAKE_VERBOSE_MAKEFILE=ON \
-			  -D CMAKE_CROSSCOMPILING=FALSE \
-			  -D CMAKE_INSTALL_PREFIX=. \
-			  -D CMAKE_BUILD_TYPE=Release \
-			  -D CMAKE_C_FLAGS_RELEASE="-DNDEBUG -D_POSIX_SOURCE" \
-			  -D CMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -D_POSIX_SOURCE" \
-			  -D NDEBUG=ON \
-			  -D BUILD_TESTING=0
+			  -D CMAKE_VERBOSE_MAKEFILE=ON
 
-MAKE_PATH:=submodule/build
+CMAKE_BINARY_SUBDIR:=submodule/build
+CMAKE_SOURCE_SUBDIR:=submodule
+
+include $(INCLUDE_DIR)/package.mk
+include $(INCLUDE_DIR)/cmake.mk
 
 define Package/example3
-
 	SECTION:=utils
 	CATEGORY:=Utilities
 	TITLE:=submodule of license manager
 	URL:=https://github.com/open-license-manager/examples.git
+	DEPENDS:=
 endef
 
 define Package/example3/description
@@ -41,13 +37,13 @@ define Package/example3/description
 endef
 
 
-define Build/Configure
-	(cd $(PKG_BUILD_DIR)/submodule/build; \
-		cmake \
-			$(CMAKE_OPTIONS) \
-		$(CMAKE_SOURCE_DIR)/submodule \
-	)
-endef
+# define Build/Configure
+# 	(cd $(PKG_BUILD_DIR)/submodule/build; \
+# 		cmake \
+# 			$(CMAKE_OPTIONS) \
+# 		$(CMAKE_SOURCE_DIR)/submodule \
+# 	)
+# endef
 
 # define Build/Compile
 # 	(cd $(PKG_BUILD_DIR)/submodule/build; \
@@ -56,9 +52,9 @@ endef
 # 	)
 # endef
 
-define Package/example3/install
-	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/submodule/build/example $(1)/usr/bin/
-endef
+# define Package/example3/install
+# 	$(INSTALL_DIR) $(1)/usr/bin
+# 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/submodule/build/example $(1)/usr/bin/
+# endef
 
 $(eval $(call BuildPackage,example3))
