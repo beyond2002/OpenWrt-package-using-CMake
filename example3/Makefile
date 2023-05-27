@@ -36,27 +36,10 @@ define Package/example3/description
 	Examples of open-license-manager
 endef
 
-
-# define Build/Configure
-# 	(cd $(PKG_BUILD_DIR)/submodule/build; \
-# 		cmake \
-# 			$(CMAKE_OPTIONS) \
-# 		$(CMAKE_SOURCE_DIR)/submodule \
-# 	)
-# endef
-
-# define Build/Compile
-# 	(cd $(PKG_BUILD_DIR)/submodule/build; \
-# 	cmake \
-# 	--build . --target install \
-# 	)
-# endef
-
 define Package/example3/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/submodule/build/example $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/usr/lib
-	# $(INSTALL_DATA) $(TOOLCHAIN_DIR)/lib/libstdc++.so.6 $(1)/usr/lib
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/submodule/build/extern/open-license-manager/src/library/liblicensecc_static.a $(1)/usr/lib
 endef
 
