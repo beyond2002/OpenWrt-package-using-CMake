@@ -16,7 +16,8 @@ PKG_BUILD_PARALLEL:=0
 
 CMAKE_OPTIONS=-D LCC_PROJECT_NAME=submodule \
 			  -D CMAKE_PREFIX_PATH=$(STAGING_DIR)/usr \
-			  -D CMAKE_VERBOSE_MAKEFILE=ON
+			  -D CMAKE_VERBOSE_MAKEFILE=ON \
+			  -D CMAKE_CROSSCOMPILING_EMULATOR=""
 
 CMAKE_BINARY_SUBDIR:=submodule/build
 CMAKE_SOURCE_SUBDIR:=submodule
@@ -39,8 +40,13 @@ endef
 define Package/example3/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/submodule/build/example $(1)/usr/bin/
+	# lccgen will be built only when boost exists
+	if [ -e $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen ]; then \
+		$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen $(1)/usr/bin/; \
+	fi
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/submodule/lccinspector $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/submodule/build/extern/open-license-manager/src/library/liblicensecc_static.a $(1)/usr/lib
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/submodule/liblicensecc_static.a $(1)/usr/lib
 endef
 
 $(eval $(call BuildPackage,example3))
