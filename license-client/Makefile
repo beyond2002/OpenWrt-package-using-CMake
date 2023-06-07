@@ -15,6 +15,7 @@ CMAKE_OPTIONS=-D LCC_PROJECT_NAME=licenseclient \
 			  -D CMAKE_VERBOSE_MAKEFILE=ON \
 			  -D CMAKE_CROSSCOMPILING_EMULATOR=""
 
+CMAKE_BINARY_SUBDIR:=build
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -43,9 +44,9 @@ define Package/licenseclient/install
 	if [ -e $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen ]; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen $(1)/usr/bin/; \
 	fi
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccinspector $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/licenseclient/lccinspector $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/usr/lib
-	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/submodule/liblicensecc_static.a $(1)/usr/lib
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/licenseclient/liblicensecc_static.a $(1)/usr/lib
 endef
 
 $(eval $(call BuildPackage,licenseclient))
