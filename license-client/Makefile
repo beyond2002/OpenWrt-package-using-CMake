@@ -23,7 +23,7 @@ include $(INCLUDE_DIR)/cmake.mk
 define Package/licenseclient
 	SECTION:=utils
 	CATEGORY:=Utilities
-	TITLE:=submodule of license manager
+	TITLE:=client of license manager
 	URL:=https://github.com/beyond2002/licenseclient.git
 	DEPENDS:=+libstdcpp
 endef
