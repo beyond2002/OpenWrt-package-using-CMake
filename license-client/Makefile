@@ -1,12 +1,8 @@
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=example3
+PKG_NAME:=licenseclient
 PKG_VERSION:=1.0.0
 PKG_RELEASE:=1
-
-# PKG_SOURCE_PROTO:=git
-# PKG_SOURCE_URL:=https://github.com/beyond2002/licenseclient.git
-# PKG_SOURCE_VERSION:=develop
 
 PKG_MAINTAINER:=Gabriele Contini <youremail@example.com>
 PKG_LICENSE:=GPL-2.0-or-later
@@ -19,8 +15,6 @@ CMAKE_OPTIONS=-D LCC_PROJECT_NAME=licenseclient \
 			  -D CMAKE_VERBOSE_MAKEFILE=ON \
 			  -D CMAKE_CROSSCOMPILING_EMULATOR=""
 
-# CMAKE_BINARY_SUBDIR:=submodule/build
-# CMAKE_SOURCE_SUBDIR:=submodule
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
@@ -54,4 +48,4 @@ define Package/licenseclient/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/submodule/liblicensecc_static.a $(1)/usr/lib
 endef
 
-$(eval $(call BuildPackage,example3))
+$(eval $(call BuildPackage,licenseclient))
