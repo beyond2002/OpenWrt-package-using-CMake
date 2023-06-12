@@ -38,7 +38,7 @@ typedef enum {
 	PRODUCT_EXPIRED = 7,    //!< PRODUCT_EXPIRED
 	LICENSE_CORRUPTED = 8,  // License signature didn't match with current license
 	IDENTIFIERS_MISMATCH = 9,  // Calculated identifier and the one provided in license didn't match
-	FEATURE_MISMATCH = 10,  // Detected features and the one in license didn't match
+	FEATURE_MISMATCH = 10,  // Feature requested is not the same as the one in license
 
 	LICENSE_SPECIFIED = 100,  // license location was specified
 	LICENSE_FOUND = 101,  // License file has been found or license data has been located

@@ -108,6 +108,8 @@ EventRegistry LicenseReader::readLicenses(const string &product, vector<FullLice
 						eventRegistry.addEvent(LICENSE_MALFORMED, *it);
 					}
 					break;
+				} else {
+					eventRegistry.addEvent(PRODUCT_NOT_LICENSED, *it);
 				}
 			}
 		}

@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
     	cout << "    " << stringByEventType[result].c_str() << endl;
 	}
   } else {
-    cout << licenseInfo.feature_name << " is NOT licensed" << endl;
+    cout << callerInfo.feature_name << " is NOT licensed" << endl;
   }
 
   return result;
