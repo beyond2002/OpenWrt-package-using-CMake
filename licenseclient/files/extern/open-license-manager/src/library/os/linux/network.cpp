@@ -107,9 +107,19 @@ FUNCTION_RETURN getAdapterInfos(vector<OsAdapterInfo> &adapterInfos) {
 	} else {
 		f_return = FUNC_RET_OK;
 		adapterInfos.reserve(adapterByName.size());
+		// Look for 'eth0' in the map.
+		auto eth0It = adapterByName.find("eth0");
+		if (eth0It != adapterByName.end()) {
+			// 'eth0' was found. Insert it as the first item.
+			adapterInfos.push_back(eth0It->second);
+			// Remove 'eth0' from map to avoid duplication.
+			adapterByName.erase(eth0It);
+		}
+
+		// Insert the rest of the items in the vector.
 		for (auto &it : adapterByName) {
 			adapterInfos.push_back(it.second);
-		}
+		}	
 	}
 	return f_return;
 }

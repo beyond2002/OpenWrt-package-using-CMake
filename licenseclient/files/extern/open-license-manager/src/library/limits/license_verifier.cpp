@@ -67,6 +67,8 @@ FUNCTION_RETURN LicenseVerifier::verify_limits(const FullLicenseInfo& lic_info) 
 LicenseInfo LicenseVerifier::toLicenseInfo(const FullLicenseInfo& fullLicInfo) const {
 	LicenseInfo info;
 	info.license_type = LCC_LOCAL;
+	fullLicInfo.m_project.copy(info.feature_name, min(fullLicInfo.m_project.size(), static_cast<size_t>(LCC_API_FEATURE_NAME_SIZE)));
+	info.feature_name[min(fullLicInfo.m_project.size(), static_cast<size_t>(LCC_API_FEATURE_NAME_SIZE))] = '\0';
 
 	const auto expiry = fullLicInfo.m_limits.find(PARAM_EXPIRY_DATE);
 	if (expiry != fullLicInfo.m_limits.end()) {

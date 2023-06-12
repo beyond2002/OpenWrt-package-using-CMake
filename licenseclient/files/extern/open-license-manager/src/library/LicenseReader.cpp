@@ -53,7 +53,7 @@ EventRegistry LicenseReader::readLicenses(const string &product, vector<FullLice
 
 	bool atLeastOneLicenseComplete = false;
 	const string product_up = toupper_copy(product);
-	const char *productNamePtr = product_up.c_str();
+	// const char *productNamePtr = product_up.c_str();
 	for (unique_ptr<locate::LocatorStrategy> &locator : locator_strategies) {
 		vector<string> licenseLocations = locator->license_locations(eventRegistry);
 		if (licenseLocations.size() == 0) {
@@ -68,35 +68,47 @@ EventRegistry LicenseReader::readLicenses(const string &product, vector<FullLice
 				eventRegistry.addEvent(FILE_FORMAT_NOT_RECOGNIZED, *it);
 				continue;
 			}
-			const int sectionSize = ini.GetSectionSize(productNamePtr);
-			if (sectionSize <= 0) {
-				eventRegistry.addEvent(PRODUCT_NOT_LICENSED, *it);
-				continue;
-			} else {
-				eventRegistry.addEvent(PRODUCT_FOUND, *it);
-			}
-			/*
-			 *  sw_version_from = (optional int)
-			 *  sw_version_to = (optional int)
-			 *  from_date = YYYY-MM-DD (optional)
-			 *  to_date  = YYYY-MM-DD (optional)
-			 *  client_signature = XXXX-XXXX-XXXX (optional string 16)
-			 *  sig = XXXXXXXXXX (mandatory, 1024)
-			 *  application_data = xxxxxxxxx (optional string 16)
-			 */
-			const char *license_signature = ini.GetValue(productNamePtr, LICENSE_SIGNATURE, nullptr);
-			long license_version = ini.GetLongValue(productNamePtr, LICENSE_VERSION, -1);
-			if (license_signature != nullptr && license_version == 200) {
-				CSimpleIniA::TNamesDepend keys;
-				ini.GetAllKeys(productNamePtr, keys);
-				FullLicenseInfo licInfo(*it, product, license_signature);
-				for (auto &it : keys) {
-					licInfo.m_limits[it.pItem] = ini.GetValue(productNamePtr, it.pItem, nullptr);
+			CSimpleIniA::TNamesDepend sections;
+			ini.GetAllSections(sections);
+
+			for (const auto& section : sections) {
+				std::string sectionName(section.pItem);
+				if (sectionName.find(product_up) != std::string::npos) {
+					// this section contains the target string
+					const char* productNamePtr = section.pItem;  // use the found section name
+
+					const int sectionSize = ini.GetSectionSize(productNamePtr);
+					if (sectionSize <= 0) {
+						eventRegistry.addEvent(PRODUCT_NOT_LICENSED, *it);
+						continue;
+					} else {
+						eventRegistry.addEvent(PRODUCT_FOUND, *it);
+					}
+					/*
+					*  sw_version_from = (optional int)
+					*  sw_version_to = (optional int)
+					*  from_date = YYYY-MM-DD (optional)
+					*  to_date  = YYYY-MM-DD (optional)
+					*  client_signature = XXXX-XXXX-XXXX (optional string 16)
+					*  sig = XXXXXXXXXX (mandatory, 1024)
+					*  application_data = xxxxxxxxx (optional string 16)
+					*/
+					const char *license_signature = ini.GetValue(productNamePtr, LICENSE_SIGNATURE, nullptr);
+					long license_version = ini.GetLongValue(productNamePtr, LICENSE_VERSION, -1);
+					if (license_signature != nullptr && license_version == 200) {
+						CSimpleIniA::TNamesDepend keys;
+						ini.GetAllKeys(productNamePtr, keys);
+						FullLicenseInfo licInfo(*it, std::string(productNamePtr), license_signature);
+						for (auto &it : keys) {
+							licInfo.m_limits[it.pItem] = ini.GetValue(productNamePtr, it.pItem, nullptr);
+						}
+						licenseInfoOut.push_back(licInfo);
+						atLeastOneLicenseComplete = true;
+					} else {
+						eventRegistry.addEvent(LICENSE_MALFORMED, *it);
+					}
+					break;
 				}
-				licenseInfoOut.push_back(licInfo);
-				atLeastOneLicenseComplete = true;
-			} else {
-				eventRegistry.addEvent(LICENSE_MALFORMED, *it);
 			}
 		}
 	}

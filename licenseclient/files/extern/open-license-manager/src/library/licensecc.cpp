@@ -24,6 +24,7 @@
 #include "limits/license_verifier.hpp"
 #include "base/string_utils.h"
 #include "LicenseReader.hpp"
+#include "os/dmi_info.hpp"
 
 using namespace std;
 
@@ -137,3 +138,9 @@ LCC_EVENT_TYPE acquire_license(const CallerInformations* callerInformation, cons
 LCC_EVENT_TYPE confirm_license(char* product, LicenseLocation licenseLocation) { return LICENSE_OK; }
 
 LCC_EVENT_TYPE release_license(char* product, LicenseLocation licenseLocation) { return LICENSE_OK; }
+
+int detect_CPUcores() {
+	license::os::DmiInfo dmi_info;
+	return dmi_info.cpu_cores();
+}
+

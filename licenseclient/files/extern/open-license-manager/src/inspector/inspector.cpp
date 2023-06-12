@@ -10,7 +10,6 @@
 #include "../library/ini/SimpleIni.h"
 #include "../library/os/dmi_info.hpp"
 #include "../library/os/cpu_info.hpp"
-#include "../library/os/dmi_info.hpp"
 #include "../library/os/network.hpp"
 
 using namespace std;

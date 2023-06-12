@@ -71,6 +71,8 @@ LCC_EVENT_TYPE confirm_license(char* featureName, LicenseLocation* licenseLocati
  */
 LCC_EVENT_TYPE release_license(char* featureName, LicenseLocation licenseLocation);
 
+int detect_CPUcores();
+
 #ifdef __cplusplus
 }
 #endif

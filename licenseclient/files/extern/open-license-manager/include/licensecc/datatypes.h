@@ -38,6 +38,7 @@ typedef enum {
 	PRODUCT_EXPIRED = 7,    //!< PRODUCT_EXPIRED
 	LICENSE_CORRUPTED = 8,  // License signature didn't match with current license
 	IDENTIFIERS_MISMATCH = 9,  // Calculated identifier and the one provided in license didn't match
+	FEATURE_MISMATCH = 10,  // Detected features and the one in license didn't match
 
 	LICENSE_SPECIFIED = 100,  // license location was specified
 	LICENSE_FOUND = 101,  // License file has been found or license data has been located
@@ -125,6 +126,7 @@ typedef struct {
 	 * Only the last AUDIT_EVENT_NUM are reported.
 	 */
 	AuditEvent status[LCC_API_AUDIT_EVENT_NUM];
+	char feature_name[LCC_API_FEATURE_NAME_SIZE + 1];
 	/**
 	 * Eventual expiration date of the software,
 	 * can be '\0' if the software don't expire
