@@ -40,6 +40,7 @@ endef
 define Package/licenseclient/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build/licensecheck $(1)/usr/bin/
+	$(INSTALL_DATA) $(PKG_BUILD_DIR)/src/licensecheck.lic $(1)/usr/bin/
 	# lccgen will be built only when boost exists
 	if [ -e $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen ]; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen $(1)/usr/bin/; \
@@ -47,6 +48,24 @@ define Package/licenseclient/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/licenseclient/lccinspector $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/licenseclient/liblicensecc_static.a $(1)/usr/lib
+	
+	$(INSTALL_DIR) $(1)/etc/crontabs
+	echo "*/1 * * * * /root/licensecheck.sh >> lcresult.txt 2>&1" > $(1)/etc/crontabs/root
+
+	$(INSTALL_DIR) $(1)/root
+	echo "#!/bin/sh\n\n/bin/echo \"Checking license ...\"\nif ! /usr/bin/licensecheck; then\n    /bin/echo \" failed!!!\"\n    reboot\nfi\n/bin/echo \"success!\"" > $(1)/root/licensecheck.sh
+	chmod +x $(1)/root/licensecheck.sh
 endef
+
+define Package/licenseclient/postinst
+#!/bin/sh
+# check if we are on real system
+if [ -z "$${IPKG_INSTROOT}" ]; then
+	echo "Restarting cron service..."
+	/etc/init.d/cron restart
+fi
+exit 0
+endef
+
 
 $(eval $(call BuildPackage,licenseclient))
