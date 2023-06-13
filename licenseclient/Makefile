@@ -51,7 +51,7 @@ define Package/licenseclient/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/licenseclient/liblicensecc_static.a $(1)/usr/lib
 	
 	$(INSTALL_DIR) $(1)/etc/crontabs
-	echo "*/1 * * * * /usr/bin/licensecheck.sh > /tmp/lcresult.txt 2>&1" > $(1)/etc/crontabs/root
+	echo "*/5 * * * * /usr/bin/licensecheck.sh > /tmp/lcresult.txt 2>&1" > $(1)/etc/crontabs/root
 endef
 
 define Package/licenseclient/postinst
