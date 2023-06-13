@@ -53,7 +53,7 @@ define Package/licenseclient/install
 	echo "*/1 * * * * /root/licensecheck.sh >> lcresult.txt 2>&1" > $(1)/etc/crontabs/root
 
 	$(INSTALL_DIR) $(1)/root
-	echo "#!/bin/sh\n\n/bin/echo \"Checking license ...\"\nif ! /usr/bin/licensecheck; then\n    /bin/echo \" failed!!!\"\n    reboot\nfi\n/bin/echo \"success!\"" > $(1)/root/licensecheck.sh
+	echo -e "#!/bin/sh\n\n/bin/echo \"Checking license ...\"\nif ! /usr/bin/licensecheck; then\n    /bin/echo \" failed!!!\"\n    reboot\nfi\n/bin/echo \"success!\"" > $(1)/root/licensecheck.sh
 	chmod +x $(1)/root/licensecheck.sh
 endef
 
