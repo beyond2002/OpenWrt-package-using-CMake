@@ -41,7 +41,7 @@ define Package/licenseclient/install
 	$(INSTALL_DIR) $(1)/usr/bin
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/build/licensecheck $(1)/usr/bin/
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/src/licensecheck.lic $(1)/usr/bin/
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/licensecheck.sh $(1)/usr/bin/
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/licenseguard.sh $(1)/usr/bin/
 	# lccgen will be built only when boost exists
 	if [ -e $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen ]; then \
 		$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/lccgen $(1)/usr/bin/; \
@@ -51,7 +51,7 @@ define Package/licenseclient/install
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/licenseclient/liblicensecc_static.a $(1)/usr/lib
 	
 	$(INSTALL_DIR) $(1)/etc/crontabs
-	echo "*/5 * * * * /usr/bin/licensecheck.sh > /tmp/lcresult.txt 2>&1" > $(1)/etc/crontabs/root
+	echo "*/5 * * * * /usr/bin/licenseguard.sh > /tmp/lgresult.txt 2>&1" > $(1)/etc/crontabs/root
 endef
 
 define Package/licenseclient/postinst
