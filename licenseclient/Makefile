@@ -49,20 +49,8 @@ define Package/licenseclient/install
 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ipkg-install/usr/bin/licenseclient/lccinspector $(1)/usr/bin/
 	$(INSTALL_DIR) $(1)/usr/lib
 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/ipkg-install/usr/lib/licensecc/licenseclient/liblicensecc_static.a $(1)/usr/lib
-	
-	$(INSTALL_DIR) $(1)/etc/crontabs
-	echo "*/5 * * * * /usr/bin/licenseguard.sh > /tmp/lgresult.txt 2>&1" > $(1)/etc/crontabs/root
+	$(INSTALL_DIR) $(1)/etc/uci-defaults
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/src/licenseclient.default $(1)/etc/uci-defaults/licenseclient
 endef
-
-define Package/licenseclient/postinst
-#!/bin/sh
-# check if we are on real system
-if [ -z "$${IPKG_INSTROOT}" ]; then
-	echo "Restarting cron service..."
-	/etc/init.d/cron restart
-fi
-exit 0
-endef
-
 
 $(eval $(call BuildPackage,licenseclient))

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+[ -d "/etc/crontabs" ] && {
+	if [ -f "/etc/crontabs/root" ]; then
+		sed -i '/.*licenseguard.*/d' /etc/crontabs/root
+		echo "*/5 * * * * /usr/bin/licenseguard.sh > /tmp/lgresult.txt 2>&1" >> /etc/crontabs/root
+	else
+		echo "*/5 * * * * /usr/bin/licenseguard.sh > /tmp/lgresult.txt 2>&1" > /etc/crontabs/root
+	fi
+}
+exit 0
