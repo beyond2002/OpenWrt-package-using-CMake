@@ -5,6 +5,13 @@
 using namespace std;
 
 #include <string>
+#include <cstdio>
+
+#include <unistd.h>
+
+bool is_root() {
+    return getuid() == 0;
+}
 
 // Function to extract integer from a string
 int extractNumber(const char* str) {
@@ -26,24 +33,132 @@ int extractNumber(const char* str) {
     return -1;
 }
 
-LCC_EVENT_TYPE extracted(LicenseInfo &licenseInfo) {
+LCC_EVENT_TYPE extracted_cpu(LicenseInfo &licenseInfo) {
   auto dummy = extractNumber(licenseInfo.feature_name);
   int cpuNum = dummy;
   if (cpuNum != -1) {
     cout << "CPU number licensed : " << cpuNum << endl;
-	int cpuCores = detect_CPUcores();
-	cout << "CPU number detected : " << cpuCores << endl;
-	if (cpuNum < cpuCores) {
-	  cout << "CPU number mismatch" << endl;
-	  return FEATURE_MISMATCH;
-	} else {
-	  cout << "CPU number OK" << endl;
-	  return LICENSE_OK;
-	}
+    int cpuCores = detect_CPUcores();
+    cout << "CPU number detected : " << cpuCores << endl;
+    if (cpuNum < cpuCores) {
+      cout << "CPU number mismatch" << endl;
+      return FEATURE_MISMATCH;
+    } else {
+      cout << "CPU number OK" << endl;
+      return LICENSE_OK;
+    }
   } else {
 	cout << "CPU number not licensed" << endl;
  	return FEATURE_MISMATCH;
- }
+  }
+}
+
+int get_wg_vpn_service_count(const char* command) {
+    FILE* pipe = popen(command, "r");
+    if (!pipe) {
+        std::cerr << "popen() failed!" << std::endl;
+        return -1;
+    }
+    char buffer[128];
+    int interface_count = 0;
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        if (strncmp(buffer, "interface:", 10) == 0) {
+            ++interface_count;
+        }
+    }
+    pclose(pipe);
+    return interface_count;
+}
+
+int get_ipsec_vpn_service_count(const char* command) {
+    FILE* pipe = popen(command, "r");
+    if (!pipe) {
+        std::cerr << "popen() failed!" << std::endl;
+        return -1;
+    }
+    char buffer[128];
+    int connection_count = 0;
+    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+        if (strstr(buffer, "ESTABLISHED") != nullptr) {
+            ++connection_count;
+        }
+    }
+    pclose(pipe);
+    return connection_count;
+}
+
+LCC_EVENT_TYPE extracted_vpnwg(LicenseInfo &licenseInfo) {
+  auto dummy = extractNumber(licenseInfo.feature_name);
+  int wgNum = dummy;
+  if (wgNum != -1) {
+    cout << "Wireguard VPN service count licensed : " << wgNum << endl;
+    std::string command = is_root() ? "wg show" : "sudo wg show";
+    int wireguard_count = get_wg_vpn_service_count(command.c_str());
+    if (wireguard_count != -1) {
+      cout << "Wireguard VPN service count detected : " << wireguard_count << endl;
+      if(wireguard_count <= wgNum) {
+        cout << "Wireguard VPN service license OK."  << endl;
+        return LICENSE_OK;
+      } else {
+        cout << "Wireguard VPN service license mismatch." << endl;
+        return FEATURE_MISMATCH;
+      }
+    }
+  } 
+  
+  cout << "Wireguard VPN number not licensed" << endl;
+  return FEATURE_MISMATCH;
+}
+
+LCC_EVENT_TYPE extracted_vpnipsec(LicenseInfo &licenseInfo) {
+  auto dummy = extractNumber(licenseInfo.feature_name);
+  int ipsecNum = dummy;
+  if (ipsecNum != -1) {
+    cout << "IPSec VPN service count licensed : " << ipsecNum << endl;
+    int ipsec_count = get_ipsec_vpn_service_count("ipsec status");
+    if (ipsec_count != -1) {
+      cout << "IPSec VPN service count detected : " << ipsec_count << endl;
+      if(ipsec_count <= ipsecNum) {
+        cout << "IPSec VPN service license OK."  << endl;
+        return LICENSE_OK;
+      } else {
+        cout << "IPSec VPN service license mismatch." << endl;
+        return FEATURE_MISMATCH;
+      }
+    }
+  } 
+  
+  cout << "IPSec VPN number not licensed" << endl;
+  return FEATURE_MISMATCH;
+}
+
+LCC_EVENT_TYPE check_license(const std::string& feature_name, std::unordered_map<LCC_EVENT_TYPE, std::string>& stringByEventType) {
+    CallerInformations callerInfo = {"\0", "\0"};
+    LicenseInfo licenseInfo;
+
+    memset(callerInfo.feature_name, 0, sizeof(callerInfo.feature_name)); // This line is optional, for clearing the buffer
+    strncpy(callerInfo.feature_name, feature_name.c_str(), sizeof(callerInfo.feature_name) - 1); // Copy the string
+
+    LCC_EVENT_TYPE result = acquire_license(&callerInfo, nullptr, &licenseInfo);
+    
+    if (result == LICENSE_OK) {
+        cout << licenseInfo.feature_name << " is licensed" << endl;
+        if (feature_name == "CPUNUM") {
+            result = extracted_cpu(licenseInfo);
+        } else if (feature_name == "WGVPN") {
+            result = extracted_vpnwg(licenseInfo);
+        } else if (feature_name == "IPSECVPN") {
+            result = extracted_vpnipsec(licenseInfo);
+        }
+
+        if (result != LICENSE_OK) {
+            cout << "license ERROR :" << endl;
+            cout << "    " << stringByEventType[result].c_str() << endl;
+        }
+    } else {
+        cout << callerInfo.feature_name << " is NOT licensed" << endl;
+    }
+    return result;
 }
 
 int main(int argc, char *argv[]) {
@@ -94,20 +209,10 @@ int main(int argc, char *argv[]) {
     }
     return -1;
   }
-  // Call the software
-  CallerInformations callerInfo = {"\0", "CPUNUM"};
-  result = acquire_license(&callerInfo, nullptr, &licenseInfo);
-
-  if (result == LICENSE_OK) {
-    cout << licenseInfo.feature_name << " is licensed" << endl;
-    result = extracted(licenseInfo);
-	if (result != LICENSE_OK) {
-		cout << "license ERROR :" << endl;
-    	cout << "    " << stringByEventType[result].c_str() << endl;
-	}
-  } else {
-    cout << callerInfo.feature_name << " is NOT licensed" << endl;
-  }
+  // Check the license for "CPUNUM", "WGVPN" and "IPSECVPN"
+  result = check_license("CPUNUM", stringByEventType);
+  result = check_license("WGVPN", stringByEventType);
+  result = check_license("IPSECVPN", stringByEventType);
 
   return result;
 }
