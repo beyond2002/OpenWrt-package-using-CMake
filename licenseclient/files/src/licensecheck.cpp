@@ -62,7 +62,7 @@ int get_wg_vpn_service_count(const char* command) {
     char buffer[128];
     int interface_count = 0;
     while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-        if (strncmp(buffer, "interface:", 10) == 0) {
+        if (strstr(buffer, "peer:") != nullptr) {
             ++interface_count;
         }
     }
@@ -210,9 +210,16 @@ int main(int argc, char *argv[]) {
     return -1;
   }
   // Check the license for "CPUNUM", "WGVPN" and "IPSECVPN"
-  result = check_license("CPUNUM", stringByEventType);
-  result = check_license("WGVPN", stringByEventType);
-  result = check_license("IPSECVPN", stringByEventType);
+  int ret = 0;
+  if(LICENSE_OK != check_license("CPUNUM", stringByEventType)) {
+    ret = -1;
+  }
+  if(LICENSE_OK != check_license("WGVPN", stringByEventType)) {
+    ret = -1;
+  }
+  if(LICENSE_OK != check_license("IPSECVPN", stringByEventType)) {
+    ret = -1;
+  }
 
-  return result;
+  return ret;
 }
